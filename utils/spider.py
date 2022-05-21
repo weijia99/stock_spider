@@ -10,13 +10,16 @@ from bean.item import item
 from utils.get_proxy import getHtml
 from utils.mysql_connextor import get_connector_mongo
 
+
 # 加入多线程，只需要进行继承类
-class Spider(threading.Thread):
-    def __init__(self):
+class Spider:
+    def __init__(self, name):
         """
 
         :param url:
         """
+
+        self.name = name
 
         self.url = "http://vip.stock.finance.sina.com.cn/corp/view/vCB_BulletinGather.php?ftype=ndbg&page_index="
         self.domain = "http://vip.stock.finance.sina.com.cn/"
@@ -65,11 +68,15 @@ class Spider(threading.Thread):
             html = htmls.decode('gbk')
 
         except Exception:
+            try:
+                if flag:
+                    html = htmls.decode('gb18030')
 
-            if flag:
-                html = htmls
-            else:
-                html = None
+            except:
+                if flag:
+                    html = htmls
+                else:
+                    html = None
 
         # 内容读取
         x_data = html
@@ -104,7 +111,6 @@ class Spider(threading.Thread):
         for a in a_list:
             href = a.xpath('@href')
             if '.PDF' not in href[0]:
-
                 href = self.domain + href[0]
                 url_list.append(href)
 
@@ -132,6 +138,7 @@ class Spider(threading.Thread):
                     continue
 
             # //*[@id="quote_area"]/table[1]/tbody/tr/th/text()
+            print(x_data.xpath('/html/head/title/text()'))
             info = x_data.xpath('/html/head/title/text()')[0]
             re_str = r'\d+'
             r = re.findall(re_str, info)
@@ -201,16 +208,17 @@ class Spider(threading.Thread):
         self.ip = "127.0.0.1"
         self.port = "7890"
         url = [
-            "http://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?CompanyCode=80570257&gather=1&id=8238382"]
+            "http://vip.stock.finance.sina.com.cn//corp/view/vCB_AllBulletinDetail.php?CompanyCode=80198934&gather=1&id=8113764"]
         self.get_url_data(url)
 
     def run(self):
         # first : get proxy
+
         self.get_proxy()
         # self.ip = "127.0.0.1"
         # self.port = "7890"
         # next foreach
-        for i in range(30, self.end):
+        for i in range(55, self.end):
             uri = self.url + str(i)
             self.page = str(i)
             url_list = self.get_page_url(uri)
@@ -222,6 +230,15 @@ class Spider(threading.Thread):
                   and it will sleep {t}s")
 
 
-t = Spider()
+# if __name__ == '__main__':
+#     start = time.time()
+#     threads = []
+#     # 创建爬虫进程
+#     link_range_list = [(40, 99), (100, 199), (200, 299), (300, 400)]
+#
+
+
+t = Spider("thread")
 t.run()
+
 # t.test()
