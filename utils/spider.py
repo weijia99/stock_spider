@@ -218,7 +218,7 @@ class Spider:
         # self.ip = "127.0.0.1"
         # self.port = "7890"
         # next foreach
-        for i in range(55, self.end):
+        for i in range(404, 601):
             uri = self.url + str(i)
             self.page = str(i)
             url_list = self.get_page_url(uri)
